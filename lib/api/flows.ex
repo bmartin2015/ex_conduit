@@ -11,11 +11,11 @@ defmodule ExConduit.API.Flows do
   - `:flow_id` (OPTIONAL) -- A string containing the Flow ID.
   """
   @type get_opts :: [get_opt]
-  @type get_opt :: {:authorization, String.t} | {:flow_id, String.t}
+  @type get_opt :: {:authorization, String.t()} | {:flow_id, String.t()}
 
-  @spec get(opts :: get_opts) :: ExConduit.Request.t
+  @spec get(opts :: get_opts) :: ExConduit.Request.t()
   def get(opts \\ []) do
-    path = 
+    path =
       case opts[:flow_id] do
         nil -> "/flows"
         _ -> "/flows/#{opts[:flow_id]}"

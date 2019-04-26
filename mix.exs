@@ -5,8 +5,8 @@ defmodule ExConduit.Mixfile do
     [
       app: :ex_conduit,
       version: "0.1.0",
-      elixir: "~> 1.5",
-      start_permanent: Mix.env == :prod,
+      elixir: "~> 1.8",
+      start_permanent: Mix.env() == :prod,
       deps: deps()
     ]
   end
@@ -21,9 +21,10 @@ defmodule ExConduit.Mixfile do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:credo, "~> 0.8", only: [:dev, :test], runtime: false},
-      {:httpoison, "~> 1.0"},
-      {:poison, "~> 3.1"}
+      {:credo, "~> 1.0.0", only: [:dev, :test], runtime: false},
+      {:tesla, "~> 1.2.0"},
+      {:jason, ">= 1.0.0"},
+      {:hackney, "~> 1.14.0"}
     ]
   end
 end

@@ -1,4 +1,6 @@
-defmodule ExConduit.Request do
+defmodule ExConduit.RequestT do
+  # Moving to Telsa!!!!
+
   @enforce_keys [
     :verb,
     :path
@@ -20,11 +22,11 @@ defmodule ExConduit.Request do
 
   @type request_opts :: [request_opt]
   @type request_opt :: {atom, any}
+
   @doc """
   Add options to a request
   """
   @spec options(req :: ExConduit.Request.t, opts :: request_opts) :: ExConduit.Request.t
-
   def options(req, []), do: req
   def options(req, opts), do: %{req | opts: Map.merge(req.opts, Map.new(opts))}
 
@@ -76,7 +78,29 @@ defmodule ExConduit.Request do
   end
 
   defp do_run(request) do
-    :ok
+    client = build_client(request)
+
+    case Tesla.request(client, [method: request.verb, url: request.path]) do
+      {:ok, resp} ->
+        {:ok, resp}
+      {:error, error}
+        -> {:error, error}
+    end
+  end
+
+  @spec build_client(ExConduit.REquest.t()) :: Telsa.Env.t()
+  def build_client(request) do
+    %{header: header, query: query} = encode_options(request)
+
+    middleware = [
+      {Tesla.Middleware.BaseUrl, @base_url},
+      {Tesla.Middleware.Headers, header},
+      {Tesla.Middleware.Query, query}
+    ]
+
+    adapter = {Tesla.Adapter.Hackney, [recv_timeout: 30_000]}
+
+    Tesla.client(middleware, adapter)
   end
 
 
@@ -102,12 +126,12 @@ defmodule ExConduit.Request do
     }
   end
 
-  @spec encode_options(:body | :query | :header, opts :: map) :: String.t
+  @spec encode_options(:body | :query | :header, opts :: map) :: String.t | map() | Keyword.t()
   defp encode_options(:body, opts) when map_size(opts) == 0, do: ""
   # In the body, only support one option and just encode the value
-  defp encode_options(:body, opts), do: Poison.encode!(opts |> Map.values |> hd)
-  defp encode_options(:query, opts) when map_size(opts) == 0, do: ""
-  defp encode_options(:query, opts), do: "?" <> URI.encode_query(opts)
+  defp encode_options(:body, opts), do: Jason.encode!(opts |> Map.values |> hd)
+  defp encode_options(:query, opts) when map_size(opts) == 0, do: []
+  defp encode_options(:query, opts), do: Map.to_list(opts)
   defp encode_options(:header, opts) when map_size(opts) == 0, do: ""
   defp encode_options(:header, opts) do
     Enum.map(opts, fn({k, v}) ->

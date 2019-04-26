@@ -6,7 +6,7 @@ defmodule ExConduit.Mixfile do
       app: :ex_conduit,
       version: "0.1.0",
       elixir: "~> 1.8",
-      start_permanent: Mix.env == :prod,
+      start_permanent: Mix.env() == :prod,
       deps: deps()
     ]
   end

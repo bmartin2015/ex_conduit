@@ -1,4 +1,4 @@
-defmodule ExConduit.RequestT do
+defmodule ExConduit.Request do
   # Moving to Telsa!!!!
 
   @enforce_keys [

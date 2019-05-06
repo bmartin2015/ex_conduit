@@ -24,7 +24,8 @@ defmodule ExConduit.Mixfile do
       {:credo, "~> 1.0.0", only: [:dev, :test], runtime: false},
       {:tesla, "~> 1.2.0"},
       {:jason, ">= 1.0.0"},
-      {:hackney, "~> 1.14.0"}
+      {:hackney, "~> 1.14.0"},
+      {:dialyxir, "~> 1.0.0-rc.6", only: [:dev], runtime: false}
     ]
   end
 end

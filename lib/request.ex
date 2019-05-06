@@ -94,12 +94,13 @@ defmodule ExConduit.Request do
     end
   end
 
-  @spec build_client(ExConduit.REquest.t()) :: Telsa.Env.t()
+  @spec build_client(ExConduit.Request.t()) :: Tesla.Client.t()
   def build_client(request) do
     %{header: header, query: query} = encode_options(request)
 
     middleware = [
       {Tesla.Middleware.BaseUrl, @base_url},
+      Tesla.Middleware.JSON,
       {Tesla.Middleware.Headers, header},
       {Tesla.Middleware.Query, query}
     ]
